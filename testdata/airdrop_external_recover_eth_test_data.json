@@ -1,0 +1,12 @@
+{
+    "account": "terra1fez59sv8ur9734ffrpvwpcjadx7n0x6z6xwp7z",
+    "root": "06baae7019d60dbb614ec44afb5c8e375eab0c8c6ddcd81fe2363ff17d2554a9",
+    "hrp": "terra",
+    "amount": "1000000",
+    "proofs": [],
+    "signed_msg": {
+      "claim_msg": "eyJldGgiOiIweDI3ZGQ0MzI4QjlkRDk5MjgxZDM5ODA1MEI1OEVBMGRiRWMxODFFNTYiLCJiYWJ5Ijoid2FzbTFxNGx5NXJtNmpwZmhoeDczeHZsbHBjNnVjbXIzeHJyNTBkdjVrcyJ9",
+      "signature": "eyJwdWJfa2V5IjoiQTdDOTBNVTI4MzRnUEZhNk9ZMVR6V3ZQU25WcXJZUThpWTVCaVZ0d1RIbE8iLCJzaWduYXR1cmUiOiJQcHBYVFNxcVZzUVBpK0ZkOGs3MlQzK25Qa0dnYjBpSjdxdXpuZDhHZ2VCanp4NThrU2FyRFFSbXBQcXp6OXlKUlR6c1I1VXJNa0tJMnVOejAvbkpMdz09In0="
+    }
+  }
+  
