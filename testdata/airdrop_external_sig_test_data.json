@@ -1,11 +1,16 @@
 {
-  "account": "terra1fez59sv8ur9734ffrpvwpcjadx7n0x6z6xwp7z",
-  "root": "06baae7019d60dbb614ec44afb5c8e375eab0c8c6ddcd81fe2363ff17d2554a9",
-  "hrp": "terra",
-  "amount": "1000000",
-  "proofs": [],
+  "account": "wasm1dttdzn4s0d34au6vyjrwek9rg52uj9p0w9dgqe",
+  "root": "145ab024bd423bb6ed66307a9abf77b4ef1f03a95c9ffcad3a567c83854ab175",
+  "hrp": "wasm",
+  "amount": "1012111",
+  "proofs": [
+      "24156603284f50cb1c5681bc5995614360cc6bc02db88459bc3bcb13b196f0b9",
+      "bdad6a0d2fb490d2437186973c6f3ccf605205b92f2d67174ae4ee2d6d66bcb7",
+      "a146f9a853662a01ddf4327a65c7174bc613f1b5e93ec27eec25acce44d759c2"
+  ],
   "signed_msg": {
-    "claim_msg": "eyJhY2NvdW50X251bWJlciI6IjExMjM2IiwiY2hhaW5faWQiOiJwaXNjby0xIiwiZmVlIjp7ImFtb3VudCI6W3siYW1vdW50IjoiMTU4MTIiLCJkZW5vbSI6InVsdW5hIn1dLCJnYXMiOiIxMDU0MDcifSwibWVtbyI6Imp1bm8xMHMydXU5MjY0ZWhscWw1ZnB5cmg5dW5kbmw1bmxhdzYzdGQwaGgiLCJtc2dzIjpbeyJ0eXBlIjoiY29zbW9zLXNkay9Nc2dTZW5kIiwidmFsdWUiOnsiYW1vdW50IjpbeyJhbW91bnQiOiIxIiwiZGVub20iOiJ1bHVuYSJ9XSwiZnJvbV9hZGRyZXNzIjoidGVycmExZmV6NTlzdjh1cjk3MzRmZnJwdndwY2phZHg3bjB4Nno2eHdwN3oiLCJ0b19hZGRyZXNzIjoidGVycmExZmV6NTlzdjh1cjk3MzRmZnJwdndwY2phZHg3bjB4Nno2eHdwN3oifX1dLCJzZXF1ZW5jZSI6IjAifQ==",
-    "signature": "eyJwdWJfa2V5IjoiQWhOZ2UxV01aVXl1ODZ5VGx5ZWpEdVVxUFZTdURONUJhQzArdkw4b3RkSnYiLCJzaWduYXR1cmUiOiJQY1FPczhXSDVPMndXL3Z3ZzZBTElqaW9VNGorMUZYNTZKU1R1MzdIb2lGbThJck5aem5HaGlIRFV1R1VTUmlhVnZRZ2s4Q0tURmNyeVpuYjZLNVhyQT09In0="
+    "claim_msg": "eyJzZW5kIjoid2FzbTFxNGx5NXJtNmpwZmhoeDczeHZsbHBjNnVjbXIzeHJyNTBkdjVrcyIsImNsYWltIjoid2FzbTFxNGx5NXJtNmpwZmhoeDczeHZsbHBjNnVjbXIzeHJyNTBkdjVrcyJ9",
+    "signature": "eyJwdWJfa2V5IjoiQXpZTG44QUpMNi9GdEFwSWdLOUFZVmI5TTh2V21pVW1BOXYwVkZycTRZMHkiLCJzaWduYXR1cmUiOiJoWUh5RDRnM2xGcFJqTi9LSEd5OFVxQXlhcG1XWlh1aEVtL3ZsMjhsSVE2bnF4MnlBMm1haU5XcXdGYW13QkZvNXNSV0VXc2JDUGVKOWpwQWFDbnRadz09In0=",
+    "hrp_flag": true
   }
 }

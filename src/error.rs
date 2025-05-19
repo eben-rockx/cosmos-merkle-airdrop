@@ -14,6 +14,9 @@ pub enum ContractError {
     #[error("Unauthorized")]
     Unauthorized {},
 
+    #[error("ContractPaused")]
+    ContractPaused {},
+
     #[error("Invalid input")]
     InvalidInput {},
 

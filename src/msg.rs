@@ -1,13 +1,12 @@
 use crate::ContractError;
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{from_slice, Binary, Uint128};
-use cw_utils::{Expiration, Scheduled};
+use cosmwasm_std::{from_slice, Binary, Uint128, Uint64};
 use serde::{Deserialize, Serialize};
 
 #[cw_serde]
 pub struct InstantiateMsg {
     /// Owner if none set to info.sender.
-    pub owner: Option<String>,
+    pub default_admin: Option<String>,
     pub cw20_token_address: Option<String>,
     pub native_token: Option<String>,
 }
@@ -15,25 +14,19 @@ pub struct InstantiateMsg {
 #[cw_serde]
 pub enum ExecuteMsg {
     UpdateConfig {
-        /// NewOwner if non sent, contract gets locked. Recipients can receive airdrops
-        /// but owner cannot register new stages.
-        new_owner: Option<String>,
         new_cw20_address: Option<String>,
         new_native_token: Option<String>,
     },
-    RegisterMerkleRoot {
+    RegisterRoot {
         /// MerkleRoot is hex-encoded merkle root.
-        merkle_root: String,
-        expiration: Option<Expiration>,
-        start: Option<Scheduled>,
-        total_amount: Option<Uint128>,
+        root: String,
+        duration: Uint64,
         // hrp is the bech32 parameter required for building external network address
         // from signature message during claim action. example "cosmos", "terra", "juno"
         hrp: Option<String>,
     },
     /// Claim does not check if contract has enough funds, owner must ensure it.
     Claim {
-        stage: u8,
         amount: Uint128,
         /// Proof is hex-encoded merkle proof.
         proof: Vec<String>,
@@ -42,28 +35,27 @@ pub enum ExecuteMsg {
         /// containing the recipient address.
         sig_info: Option<SignatureInfo>,
     },
-    /// Burn the remaining tokens in the stage after expiry time (only owner)
-    Burn {
-        stage: u8,
+    Pause {},
+    UnPause {},
+    SetDelay {
+        delay: u64,
     },
-    /// Withdraw the remaining tokens in the stage after expiry time (only owner)
-    Withdraw {
-        stage: u8,
+    UpdateRoot {
+        root: String,
+    },
+    UpdateDuration {
+        duration: u64,
+    },
+    SetAirdrop {
+        disable: bool,
+    },
+    GrantRole {
+        role: String,
         address: String,
     },
-    /// Burn all of the remaining tokens that the contract owns (only owner)
-    BurnAll {},
-    /// Withdraw all/some of the remaining tokens that the contract owns (only owner)
-    WithdrawAll {
+    RevokeRole {
+        role: String,
         address: String,
-        amount: Option<Uint128>,
-    },
-    Pause {
-        stage: u8,
-    },
-    Resume {
-        stage: u8,
-        new_expiration: Option<Expiration>,
     },
 }
 
@@ -72,42 +64,37 @@ pub enum ExecuteMsg {
 pub enum QueryMsg {
     #[returns(ConfigResponse)]
     Config {},
-    #[returns(MerkleRootResponse)]
-    MerkleRoot { stage: u8 },
+    #[returns(DistResponse)]
+    StageDist { stage: u8 },
     #[returns(LatestStageResponse)]
     LatestStage {},
-    #[returns(IsClaimedResponse)]
-    IsClaimed { stage: u8, address: String },
-    #[returns(TotalClaimedResponse)]
-    TotalClaimed { stage: u8 },
-    // for cross chain airdrops, maps target account to host account
-    #[returns(AccountMapResponse)]
-    AccountMap { stage: u8, external_address: String },
-    #[returns(AllAccountMapResponse)]
-    AllAccountMaps {
-        stage: u8,
-        start_after: Option<String>,
-        limit: Option<u32>,
-    },
+    #[returns(ClaimedResponse)]
+    HasClaimed { stage: u8, users: Vec<String> },
     #[returns(IsPausedResponse)]
-    IsPaused { stage: u8 },
+    IsPaused {},
+    #[returns(ActiveResponse)]
+    IsActive {},
+    #[returns(RoleResponse)]
+    HasRole { role: String, address: String },
+    #[returns(ActiveDelayResponse)]
+    ActiveDelay {},
 }
 
 #[cw_serde]
 pub struct ConfigResponse {
-    pub owner: Option<String>,
     pub cw20_token_address: Option<String>,
     pub native_token: Option<String>,
 }
 
 #[cw_serde]
-pub struct MerkleRootResponse {
+pub struct DistResponse {
     pub stage: u8,
-    /// MerkleRoot is hex-encoded merkle root.
-    pub merkle_root: String,
-    pub expiration: Expiration,
-    pub start: Option<Scheduled>,
-    pub total_amount: Uint128,
+    /// Dist info.
+    pub activate_at: Uint64,
+    pub duration: Uint64,
+    pub root: String,
+    pub disable: bool,
+    pub hrp: Option<String>,
 }
 
 #[cw_serde]
@@ -116,8 +103,8 @@ pub struct LatestStageResponse {
 }
 
 #[cw_serde]
-pub struct IsClaimedResponse {
-    pub is_claimed: bool,
+pub struct ClaimedResponse {
+    pub claimed: Vec<bool>,
 }
 
 #[cw_serde]
@@ -126,19 +113,18 @@ pub struct IsPausedResponse {
 }
 
 #[cw_serde]
-pub struct TotalClaimedResponse {
-    pub total_claimed: Uint128,
+pub struct ActiveResponse {
+    pub is_active: bool,
 }
 
 #[cw_serde]
-pub struct AccountMapResponse {
-    pub host_address: String,
-    pub external_address: String,
+pub struct RoleResponse {
+    pub has_role: bool,
 }
 
 #[cw_serde]
-pub struct AllAccountMapResponse {
-    pub address_maps: Vec<AccountMapResponse>,
+pub struct ActiveDelayResponse {
+    pub active_delay: u64,
 }
 
 #[cw_serde]
@@ -149,32 +135,20 @@ pub struct MigrateMsg {}
 pub struct SignatureInfo {
     pub claim_msg: Binary,
     pub signature: Binary,
+    pub hrp_flag: bool,
+    pub recovery_id: Option<u8>,
 }
 impl SignatureInfo {
-    pub fn extract_addr(&self) -> Result<String, ContractError> {
+    pub fn extract_addr(&self) -> Result<(String, String), ContractError> {
         let claim_msg = from_slice::<ClaimMsg>(&self.claim_msg)?;
-        Ok(claim_msg.address)
-    }
-
-    pub fn extract_behalf_addr(&self) -> Result<(String,String), ContractError> {
-        let claim_msg = from_slice::<ClaimBehalfMsg>(&self.claim_msg)?;
-        Ok((claim_msg.eth_ddress, claim_msg.baby_ddress))
+        Ok((claim_msg.send_address, claim_msg.claim_address))
     }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ClaimMsg {
-    // To provide claiming via signature, the address is passed in the memo field of a cosmos msg.
-    #[serde(rename = "memo")]
-    address: String,
-}
-
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-pub struct ClaimBehalfMsg {
-    // To provide claiming via evm user, the address is passed in the eth field of a cosmos msg.
-    #[serde(rename = "eth")]
-    eth_ddress: String,
-    #[serde(rename = "baby")]
-    baby_ddress: String,
+    #[serde(rename = "send")]
+    send_address: String,
+    #[serde(rename = "claim")]
+    claim_address: String,
 }

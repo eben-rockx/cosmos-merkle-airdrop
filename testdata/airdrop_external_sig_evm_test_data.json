@@ -1,0 +1,17 @@
+{
+  "account": "0x27dd4328b9dd99281d398050b58ea0dbec181e56",
+  "root": "0654555c6e689ea92e4fea3bf1e16e96d5168bd10505bc3aa6fed57c8a20fe6b",
+  "hrp": "eth",
+  "amount": "1110110",
+  "proofs": [
+      "e0bbd68ef4f865e3563b6e6a5c66f692c84a0b8da277a4bcbb05c44a5372b15d",
+      "64a999b86601ddaf08d16d6e03892eeb7fe629aa171ba68d6b69a8de2839c128",
+      "4bee4537932032a4774ec6561d8f79d7c7db057e2fec5aa5a2d9c76775a28e32"
+  ],
+  "signed_msg": {
+    "claim_msg": "eyJzZW5kIjoid2FzbTFxNGx5NXJtNmpwZmhoeDczeHZsbHBjNnVjbXIzeHJyNTBkdjVrcyIsImNsYWltIjoid2FzbTFxNGx5NXJtNmpwZmhoeDczeHZsbHBjNnVjbXIzeHJyNTBkdjVrcyJ9",
+    "signature": "eyJwdWJfa2V5IjoiQTdDOTBNVTI4MzRnUEZhNk9ZMVR6V3ZQU25WcXJZUThpWTVCaVZ0d1RIbE8iLCJzaWduYXR1cmUiOiJzdmE0NU9WOWd2aERKYWJjK21HM3ZUVVdVT0xML21NbHFibWkwdDQrNi8xamNoZkgvRC9NcHNsS0lTK1RXTUN5YkY5WGg1RWRwWTZSZVBBSjl5djlYZz09In0=",
+    "hrp_flag": false,
+    "recovery_id": 1
+  }
+}
