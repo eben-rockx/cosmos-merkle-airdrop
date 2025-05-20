@@ -50,8 +50,10 @@ Uses **SHA256** for merkle root tree construction.
 
 ```rust
 pub struct InstantiateMsg {
-  pub owner: String,
-  pub cw20_token_address: String,
+    /// Owner if none set to info.sender.
+    pub default_admin: Option<String>,
+    pub cw20_token_address: Option<String>,
+    pub native_token: Option<String>,
 }
 ```
 
@@ -59,24 +61,49 @@ pub struct InstantiateMsg {
 
 ```rust
 pub enum ExecuteMsg {
-  UpdateConfig {
-    owner: Option<String>,
-  },
-  RegisterMerkleRoot {
-    merkle_root: String,
-  },
-  Claim {
-    stage: u8,
-    amount: Uint128,
-    proof: Vec<String>,
-  },
+    UpdateConfig {
+        new_cw20_address: Option<String>,
+        new_native_token: Option<String>,
+    },
+    RegisterRoot {
+        root: String,
+        duration: Uint64,
+        hrp: Option<String>,
+    },
+    Claim {
+        amount: Uint128,
+        proof: Vec<String>,
+        sig_info: Option<SignatureInfo>,
+    },
+    Pause {},
+    UnPause {},
+    SetDelay {
+        delay: u64,
+    },
+    UpdateRoot {
+        root: String,
+    },
+    UpdateDuration {
+        duration: u64,
+    },
+    SetAirdrop {
+        disable: bool,
+    },
+    GrantRole {
+        role: String,
+        address: String,
+    },
+    RevokeRole {
+        role: String,
+        address: String,
+    },
 }
 ```
 
-- `UpdateConfig{owner}` updates configuration.
+- `UpdateConfig{}` updates configuration.
 - `RegisterMerkleRoot {merkle_root}` registers merkle tree root for further claim verification. Airdrop `Stage`
   increased by 1.
-- `Claim{stage, amount, proof}` recipient executes for claiming airdrop with `stage`, `amount` and `proof` data built
+- `Claim{amount, proof}` recipient executes for claiming airdrop with, `amount` and `proof` data built
   using full list.
 
 #### QueryMsg
@@ -84,16 +111,20 @@ pub enum ExecuteMsg {
 ``` rust
 pub enum QueryMsg {
     Config {},
-    MerkleRoot { stage: u8 },
+    StageDist { stage: u8 },
     LatestStage {},
-    IsClaimed { stage: u8, address: String },
+    HasClaimed { stage: u8, users: Vec<String> },
+    IsPaused {},
+    IsActive {},
+    HasRole { role: String, address: String },
+    ActiveDelay {},
 }
 ```
 
-- `{ config: {} }` returns configuration, `{"cw20_token_address": ..., "owner": ...}`.
-- `{ merkle_root: { stage: "1" }` returns merkle root of given stage, `{"merkle_root": ... , "stage": ...}`
+- `{ config: {} }` returns configuration, `{"cw20_token_address": ..., "native_token": ...}`.
+- `{ stage_dist: { stage: 1 }` returns merkle root of given stage, `{"root": ... , "stage": ...}`
 - `{ latest_stage: {}}` returns current airdrop stage, `{"latest_stage": ...}`
-- `{ is_claimed: {stage: "stage", address: "wasm1..."}` returns if address claimed airdrop, `{"is_claimed": "true"}`
+- `{ has_claimed: {stage: 1, users: ["wasm1..."]}` returns if address claimed airdrop, `{["true"]}`
 
 ## Merkle Airdrop CLI
 
@@ -103,3 +134,8 @@ file.
 ## Test Vector Generation
 
 Test vector can be generated using commands at [Merkle Airdrop CLI README](helpers/README.md)
+
+## Build
+`RUSTFLAGS="-C link-arg=-s" cargo build --release --target=wasm32-unknown-unknown --locked`
+
+`wasm-opt -Oz -o optimized-airdrop.wasm target/wasm32-unknown-unknown/release/cw20_merkle_airdrop.wasm`
